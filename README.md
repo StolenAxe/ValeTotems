@@ -31,6 +31,10 @@ Example:
 - Helps track Ent movement patterns
 - Dynamically updates as new trails appear
 
+Example:
+
+![img.png](media/ent_trails.png)
+
 ### Debug Mode
 - Detailed logging for troubleshooting / development
 - Widget inspection for development
