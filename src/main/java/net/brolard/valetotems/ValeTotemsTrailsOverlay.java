@@ -5,10 +5,12 @@ import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.NPC;
-import net.runelite.api.ObjectComposition;
 import net.runelite.api.Perspective;
 import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
+import net.runelite.api.Renderable;
+import net.runelite.api.DynamicObject;
+import net.runelite.api.Animation;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
@@ -31,8 +33,9 @@ public class ValeTotemsTrailsOverlay extends Overlay
     private final ValeTotemsConfig config;
 
     // Known Ent Trail IDs (game objects spawned as the ent walks)
-    private static final Set<Integer> ENT_TRAIL_IDS = new HashSet<>(Arrays.asList(57115, 57116, 57117));
-    private static final Set<Integer> ENT_TRAIL_STEPPED_IDS = new HashSet<>(Arrays.asList(57117));
+    private static final Set<Integer> ENT_TRAIL_IDS = new HashSet<>(Arrays.asList(57115, 57116));
+    // Animation used when the ent has stepped on the trail
+    private static final int STEPPED_ANIM_ID = 12346;
 
     // Locations the ent admires when performing its worship animation
     private static final Set<Integer> ADMIRE_OBJECT_IDS = new HashSet<>(Arrays.asList(
@@ -128,9 +131,22 @@ public class ValeTotemsTrailsOverlay extends Overlay
             return;
         }
 
-        Color base = ENT_TRAIL_STEPPED_IDS.contains(groundObject.getId())
-                ? config.activeColor()
-                : config.readyColor();
+        boolean stepped = false;
+        if (groundObject instanceof GameObject)
+        {
+            Renderable renderable = ((GameObject) groundObject).getRenderable();
+            if (renderable instanceof DynamicObject)
+            {
+                DynamicObject dyn = (DynamicObject) renderable;
+                Animation anim = dyn.getAnimation();
+                if (anim != null && anim.getId() == STEPPED_ANIM_ID)
+                {
+                    stepped = true;
+                }
+            }
+        }
+
+        Color base = stepped ? config.activeColor() : config.readyColor();
 
         graphics.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), 100));
         graphics.setStroke(new BasicStroke(2));

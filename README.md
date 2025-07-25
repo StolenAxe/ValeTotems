@@ -118,7 +118,6 @@ The plugin tracks totem states using game varbits:
 ### Known Ent Trail IDs
 - 57115
 - 57116
-- 57117
 
 If you discover additional Ent Trail IDs, please report them!
 
