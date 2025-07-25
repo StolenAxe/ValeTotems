@@ -20,8 +20,27 @@ public class ValeTotemsTrailsOverlay extends Overlay
     private final ValeTotems plugin;
     private final ValeTotemsConfig config;
 
-    // Known Ent Trail IDs
-    private static final Set<Integer> ENT_TRAIL_IDS = new HashSet<>(Arrays.asList(55115, 55116));
+    // Known Ent Trail IDs (game objects spawned as the ent walks)
+    private static final Set<Integer> ENT_TRAIL_IDS = new HashSet<>(Arrays.asList(57115, 57116));
+
+    // Locations the ent admires when performing its worship animation
+    private static final Set<Integer> ADMIRE_OBJECT_IDS = new HashSet<>(Arrays.asList(
+            ObjectID.ENT_TOTEMS_ADMIRE_LOC_1,
+            ObjectID.ENT_TOTEMS_ADMIRE_LOC_2,
+            ObjectID.ENT_TOTEMS_ADMIRE_LOC_3
+    ));
+
+    // Ent NPC IDs
+    private static final Set<Integer> ENT_NPC_IDS = new HashSet<>(Arrays.asList(
+            NpcID.ENT_TOTEMS_ENT,
+            NpcID.ENT_TOTEMS_ENT_BUFFED
+    ));
+
+    // Worship animation IDs
+    private static final Set<Integer> ENT_WORSHIP_ANIMS = new HashSet<>(Arrays.asList(
+            AnimationID.NPC_ENT_WORSHIP_01,
+            AnimationID.NPC_ENT_WORSHIP_02
+    ));
 
     @Inject
     public ValeTotemsTrailsOverlay(Client client, ValeTotems plugin, ValeTotemsConfig config)
@@ -46,6 +65,8 @@ public class ValeTotemsTrailsOverlay extends Overlay
         Tile[][][] tiles = client.getScene().getTiles();
         int z = client.getPlane();
 
+        Set<GameObject> admireObjects = new HashSet<>();
+
         for (int x = 0; x < 104; x++)
         {
             for (int y = 0; y < 104; y++)
@@ -61,8 +82,23 @@ public class ValeTotemsTrailsOverlay extends Overlay
                 {
                     highlightGroundObject(graphics, groundObject);
                 }
+
+                // Collect admire objects for later highlighting
+                GameObject[] gameObjects = tile.getGameObjects();
+                if (gameObjects != null)
+                {
+                    for (GameObject obj : gameObjects)
+                    {
+                        if (obj != null && ADMIRE_OBJECT_IDS.contains(obj.getId()))
+                        {
+                            admireObjects.add(obj);
+                        }
+                    }
+                }
             }
         }
+
+        highlightAdmireObjects(graphics, admireObjects);
 
         return null;
     }
@@ -107,6 +143,68 @@ public class ValeTotemsTrailsOverlay extends Overlay
 
         // Fill with translucent green
         graphics.setColor(new Color(0, 255, 0, 30));
+        graphics.fill(poly);
+    }
+
+    private void highlightAdmireObjects(Graphics2D graphics, Set<GameObject> objects)
+    {
+        if (objects.isEmpty())
+        {
+            return;
+        }
+
+        for (NPC npc : client.getNpcs())
+        {
+            if (!ENT_NPC_IDS.contains(npc.getId()))
+            {
+                continue;
+            }
+
+            if (!ENT_WORSHIP_ANIMS.contains(npc.getAnimation()))
+            {
+                continue;
+            }
+
+            GameObject nearest = null;
+            int bestDist = Integer.MAX_VALUE;
+            WorldPoint npcWp = npc.getWorldLocation();
+
+            for (GameObject obj : objects)
+            {
+                int dist = npcWp.distanceTo(obj.getWorldLocation());
+                if (dist < bestDist)
+                {
+                    bestDist = dist;
+                    nearest = obj;
+                }
+            }
+
+            if (nearest != null)
+            {
+                highlightGameObject(graphics, nearest);
+            }
+        }
+    }
+
+    private void highlightGameObject(Graphics2D graphics, GameObject object)
+    {
+        LocalPoint lp = object.getLocalLocation();
+        if (lp == null)
+        {
+            return;
+        }
+
+        Polygon poly = Perspective.getCanvasTilePoly(client, lp);
+        if (poly == null)
+        {
+            return;
+        }
+
+        graphics.setColor(new Color(0, 255, 255, 100));
+        graphics.setStroke(new BasicStroke(2));
+        graphics.draw(poly);
+
+        graphics.setColor(new Color(0, 255, 255, 30));
         graphics.fill(poly);
     }
 }
