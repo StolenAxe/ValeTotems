@@ -2,16 +2,22 @@ package net.brolard.valetotems;
 
 import javax.inject.Inject;
 
-import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.gameval.AnimationID;
-import net.runelite.api.gameval.NpcID;
-import net.runelite.api.gameval.ObjectID;
+import net.runelite.api.Client;
+import net.runelite.api.GameObject;
+import net.runelite.api.NPC;
+import net.runelite.api.ObjectComposition;
+import net.runelite.api.Perspective;
+import net.runelite.api.Tile;
+import net.runelite.api.TileObject;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
+import net.runelite.api.gameval.AnimationID;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.ObjectID;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -69,7 +75,7 @@ public class ValeTotemsTrailsOverlay extends Overlay
         Tile[][][] tiles = client.getScene().getTiles();
         int z = client.getPlane();
 
-        Set<GameObject> admireObjects = new HashSet<>();
+        Set<TileObject> admireObjects = new HashSet<>();
 
         for (int x = 0; x < 104; x++)
         {
@@ -81,22 +87,17 @@ public class ValeTotemsTrailsOverlay extends Overlay
                     continue;
                 }
 
-                GroundObject groundObject = tile.getGroundObject();
-                if (groundObject != null && isEntTrail(groundObject))
+                // Check all tile objects for ent trails or admire objects
+                for (TileObject obj : getTileObjects(tile))
                 {
-                    highlightGroundObject(graphics, groundObject);
-                }
-
-                // Collect admire objects for later highlighting
-                GameObject[] gameObjects = tile.getGameObjects();
-                if (gameObjects != null)
-                {
-                    for (GameObject obj : gameObjects)
+                    if (isEntTrail(obj))
                     {
-                        if (obj != null && ADMIRE_OBJECT_IDS.contains(obj.getId()))
-                        {
-                            admireObjects.add(obj);
-                        }
+                        highlightEntTrail(graphics, obj);
+                    }
+
+                    if (ADMIRE_OBJECT_IDS.contains(obj.getId()))
+                    {
+                        admireObjects.add(obj);
                     }
                 }
             }
@@ -107,26 +108,12 @@ public class ValeTotemsTrailsOverlay extends Overlay
         return null;
     }
 
-    private boolean isEntTrail(GroundObject groundObject)
+    private boolean isEntTrail(TileObject object)
     {
-        // First check if the ID matches
-        if (!ENT_TRAIL_IDS.contains(groundObject.getId()))
-        {
-            return false;
-        }
-
-        // Then verify the name to be extra sure
-        ObjectComposition comp = client.getObjectDefinition(groundObject.getId());
-        if (comp == null || comp.getName() == null)
-        {
-            return false;
-        }
-
-        // Must be exactly "Ent Trail" (case insensitive to be safe)
-        return comp.getName().equalsIgnoreCase("Ent Trail");
+        return object != null && ENT_TRAIL_IDS.contains(object.getId());
     }
 
-    private void highlightGroundObject(Graphics2D graphics, GroundObject groundObject)
+    private void highlightEntTrail(Graphics2D graphics, TileObject groundObject)
     {
         LocalPoint lp = groundObject.getLocalLocation();
         if (lp == null)
@@ -150,7 +137,7 @@ public class ValeTotemsTrailsOverlay extends Overlay
         graphics.fill(poly);
     }
 
-    private void highlightAdmireObjects(Graphics2D graphics, Set<GameObject> objects)
+    private void highlightAdmireObjects(Graphics2D graphics, Set<TileObject> objects)
     {
         if (objects.isEmpty())
         {
@@ -169,11 +156,11 @@ public class ValeTotemsTrailsOverlay extends Overlay
                 continue;
             }
 
-            GameObject nearest = null;
+            TileObject nearest = null;
             int bestDist = Integer.MAX_VALUE;
             WorldPoint npcWp = npc.getWorldLocation();
 
-            for (GameObject obj : objects)
+            for (TileObject obj : objects)
             {
                 int dist = npcWp.distanceTo(obj.getWorldLocation());
                 if (dist < bestDist)
@@ -185,12 +172,12 @@ public class ValeTotemsTrailsOverlay extends Overlay
 
             if (nearest != null)
             {
-                highlightGameObject(graphics, nearest);
+                highlightTileObject(graphics, nearest);
             }
         }
     }
 
-    private void highlightGameObject(Graphics2D graphics, GameObject object)
+    private void highlightTileObject(Graphics2D graphics, TileObject object)
     {
         LocalPoint lp = object.getLocalLocation();
         if (lp == null)
@@ -210,5 +197,39 @@ public class ValeTotemsTrailsOverlay extends Overlay
 
         graphics.setColor(new Color(0, 255, 255, 30));
         graphics.fill(poly);
+    }
+
+    private Iterable<TileObject> getTileObjects(Tile tile)
+    {
+        Set<TileObject> objs = new HashSet<>();
+
+        if (tile.getGroundObject() != null)
+        {
+            objs.add(tile.getGroundObject());
+        }
+
+        if (tile.getDecorativeObject() != null)
+        {
+            objs.add(tile.getDecorativeObject());
+        }
+
+        if (tile.getWallObject() != null)
+        {
+            objs.add(tile.getWallObject());
+        }
+
+        GameObject[] gos = tile.getGameObjects();
+        if (gos != null)
+        {
+            for (GameObject go : gos)
+            {
+                if (go != null)
+                {
+                    objs.add(go);
+                }
+            }
+        }
+
+        return objs;
     }
 }
