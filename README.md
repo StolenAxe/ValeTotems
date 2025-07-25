@@ -31,6 +31,10 @@ Example:
 - Helps track Ent movement patterns
 - Dynamically updates as new trails appear
 
+Example:
+
+![img.png](media/ent_trails.png)
+
 ### Debug Mode
 - Detailed logging for troubleshooting / development
 - Widget inspection for development
@@ -108,8 +112,8 @@ The plugin tracks totem states using game varbits:
 - Animal assignments
 
 ### Known Ent Trail IDs
-- 55115
-- 55116
+- 57115
+- 57116
 
 If you discover additional Ent Trail IDs, please report them!
 
