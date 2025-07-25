@@ -1,3 +1,15 @@
+![img_1.png](icon.png)
+
+# Vale Totems Plugin
+
+A RuneLite plugin that enhances the Vale Totems minigame experience in Varlamore by providing helpful overlays and tracking features.
+
+## Features
+
+### Totem Site Tracking
+- Displays status of all 8 totem sites in a convenient overlay
+- Shows current points at each site
+- Indicates which sites are ready to build, active, or have claimable points
 - Tracks total points across all sites
 
 Example:
@@ -19,9 +31,14 @@ Example:
 - Helps track Ent movement patterns
 - Dynamically updates as new trails appear
 
-Example:
+#### Ent-Trail Highlighting Examples:
+Closed (not yet stepped on)
 
-![img.png](media/ent_trails.png)
+![img.png](media/trail_closed.png)
+
+Open (stepped on)
+
+![img_2.png](media/trail_open.png)
 
 ### World Map Overlay
 - Optional world map boxes showing each site's status and points
@@ -106,7 +123,6 @@ The plugin tracks totem states using game varbits:
 ### Known Ent Trail IDs
 - 57115
 - 57116
-- 57117
 
 If you discover additional Ent Trail IDs, please report them!
 
