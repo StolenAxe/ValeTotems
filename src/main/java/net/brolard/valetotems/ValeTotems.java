@@ -16,8 +16,11 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
+import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
 import net.runelite.client.util.Text;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 import static net.runelite.api.gameval.VarbitID.*;
@@ -95,6 +98,7 @@ public class ValeTotems extends Plugin
 	private final Map<Integer, String> currentAnimalMap = new HashMap<>();
 	private boolean expectingTotemDialog = false;
 	private int animalsCarvedAtCurrentSite = 0;
+	private final List<WorldMapPoint> mapPoints = new ArrayList<>();
 
 	// ===================== LIFECYCLE =====================
 	@Override
@@ -613,6 +617,8 @@ public class ValeTotems extends Plugin
 				log.debug("Error reading varbit for site {}: {}", i, e.getMessage());
 			}
 		}
+
+		updateWorldMapPoints();
 	}
 
 	private void updateCorrectAnimals()
@@ -643,6 +649,42 @@ public class ValeTotems extends Plugin
 			log.info("Total correct animals found: {}", correctAnimals.size());
 		} catch (Exception e) {
 			log.error("Error reading animal varbits: ", e);
+		}
+	}
+
+	private void updateWorldMapPoints()
+	{
+		worldMapPointManager.removeIf(mapPoints::contains);
+		mapPoints.clear();
+
+		if (!config.showWorldMapOverlay())
+		{
+			return;
+		}
+
+		for (TotemSiteInfo site : totemSites.values())
+		{
+			Color color = getStatusColor(site);
+			BufferedImage img = ValeTotemsWorldMapOverlay.createImage(color, site.points);
+			WorldMapPoint point = new ValeTotemsWorldMapOverlay(site.location, site.points, color, img);
+			mapPoints.add(point);
+			worldMapPointManager.add(point);
+		}
+	}
+
+	private Color getStatusColor(TotemSiteInfo site)
+	{
+		if (site.baseCarved == 0 && site.decay == 0)
+		{
+			return config.readyColor();
+		}
+		else if (site.baseCarved == 1)
+		{
+			return config.activeColor();
+		}
+		else
+		{
+			return config.emptyColor();
 		}
 	}
 
