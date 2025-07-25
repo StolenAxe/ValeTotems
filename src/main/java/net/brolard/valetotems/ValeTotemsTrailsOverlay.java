@@ -3,6 +3,10 @@ package net.brolard.valetotems;
 import javax.inject.Inject;
 
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.gameval.AnimationID;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.ObjectID;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
