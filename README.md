@@ -108,8 +108,8 @@ The plugin tracks totem states using game varbits:
 - Animal assignments
 
 ### Known Ent Trail IDs
-- 55115
-- 55116
+- 57115
+- 57116
 
 If you discover additional Ent Trail IDs, please report them!
 
