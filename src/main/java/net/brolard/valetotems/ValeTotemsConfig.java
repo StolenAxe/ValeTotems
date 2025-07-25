@@ -56,4 +56,44 @@ public interface ValeTotemsConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+			keyName = "showWorldMapOverlay",
+			name = "Show World Map Overlay",
+			description = "Display totem status boxes on the world map"
+	)
+	default boolean showWorldMapOverlay()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "readyColor",
+			name = "Ready Color",
+			description = "Color for ready-to-build totems"
+	)
+	default java.awt.Color readyColor()
+	{
+		return java.awt.Color.CYAN;
+	}
+
+	@ConfigItem(
+			keyName = "activeColor",
+			name = "Active Color",
+			description = "Color for active totems"
+	)
+	default java.awt.Color activeColor()
+	{
+		return java.awt.Color.GREEN;
+	}
+
+	@ConfigItem(
+			keyName = "emptyColor",
+			name = "Empty Color",
+			description = "Color for empty totem sites"
+	)
+	default java.awt.Color emptyColor()
+	{
+		return java.awt.Color.GRAY;
+	}
 }

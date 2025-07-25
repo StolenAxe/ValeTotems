@@ -35,6 +35,9 @@ Example:
 
 ![img.png](media/ent_trails.png)
 
+### World Map Overlay
+- Optional world map boxes showing each site's status and points
+
 ### Debug Mode
 - Detailed logging for troubleshooting / development
 - Widget inspection for development
@@ -57,6 +60,7 @@ Access the plugin settings through the RuneLite configuration panel:
 | **Highlight Dialog Options** | ✅ On | Highlights correct animals in the carving dialog   |
 | **Show Animal Popup** | ❌ Off | Shows a separate popup with correct animal numbers |
 | **Highlight Ent Trails** | ❌ Off | Highlights Ent Trail ground objects (WIP)          |
+| **Show World Map Overlay** | ❌ Off | Displays colored boxes on the world map |
 | **Debug Mode** | ❌ Off | Enables detailed logging for troubleshooting       |
 
 ## How to Use
@@ -114,6 +118,7 @@ The plugin tracks totem states using game varbits:
 ### Known Ent Trail IDs
 - 57115
 - 57116
+- 57117
 
 If you discover additional Ent Trail IDs, please report them!
 

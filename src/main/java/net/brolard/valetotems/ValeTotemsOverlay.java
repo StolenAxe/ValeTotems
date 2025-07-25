@@ -97,15 +97,15 @@ public class ValeTotemsOverlay extends OverlayPanel
     {
         if (site.baseCarved == 0 && site.decay == 0)
         {
-            return Color.GREEN; // Ready to build
+            return config.readyColor();
         }
         else if (site.baseCarved == 1)
         {
-            return Color.CYAN; // Active totem
+            return config.activeColor();
         }
         else
         {
-            return Color.GRAY; // Empty/other
+            return config.emptyColor();
         }
     }
 }

@@ -31,7 +31,8 @@ public class ValeTotemsTrailsOverlay extends Overlay
     private final ValeTotemsConfig config;
 
     // Known Ent Trail IDs (game objects spawned as the ent walks)
-    private static final Set<Integer> ENT_TRAIL_IDS = new HashSet<>(Arrays.asList(57115, 57116));
+    private static final Set<Integer> ENT_TRAIL_IDS = new HashSet<>(Arrays.asList(57115, 57116, 57117));
+    private static final Set<Integer> ENT_TRAIL_STEPPED_IDS = new HashSet<>(Arrays.asList(57117));
 
     // Locations the ent admires when performing its worship animation
     private static final Set<Integer> ADMIRE_OBJECT_IDS = new HashSet<>(Arrays.asList(
@@ -127,13 +128,15 @@ public class ValeTotemsTrailsOverlay extends Overlay
             return;
         }
 
-        // Draw a bright green outline
-        graphics.setColor(new Color(0, 255, 0, 100));
+        Color base = ENT_TRAIL_STEPPED_IDS.contains(groundObject.getId())
+                ? config.activeColor()
+                : config.readyColor();
+
+        graphics.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), 100));
         graphics.setStroke(new BasicStroke(2));
         graphics.draw(poly);
 
-        // Fill with translucent green
-        graphics.setColor(new Color(0, 255, 0, 30));
+        graphics.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), 30));
         graphics.fill(poly);
     }
 
