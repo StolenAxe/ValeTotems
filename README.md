@@ -1,18 +1,6 @@
-![img_1.png](icon.png)
-
-# Vale Totems Plugin
-
-A RuneLite plugin that enhances the Vale Totems minigame experience in Varlamore by providing helpful overlays and tracking features.
-
-## Features
-
-### Totem Site Tracking
-- Displays status of all 8 totem sites in a convenient overlay
-- Shows current points at each site
-- Indicates which sites are ready to build, active, or have claimable points
 - Tracks total points across all sites
 
-Example: 
+Example:
 
 ![img.png](media/site_overlay.png)
 
